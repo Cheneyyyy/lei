@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="粵拼小課堂：用字卡、聽音和互動測驗學習常見粵語拼音。">
+<title>粵拼小課堂｜AI 輔助粵語拼音學習</title>
+<style>
+:root{
+  --bg:#f9fafb;--surface:#fff;--surface-2:#f5f3ff;--surface-3:#eef2ff;
+  --ink:#111827;--body:#374151;--muted:#6b7280;--line:#e5e7eb;
+  --primary:#4f46e5;--primary-dark:#3730a3;--primary-light:#818cf8;
+  --success:#10b981;--success-bg:#ecfdf5;--gold:#f59e0b;--gold-bg:#fffbeb;
+  --shadow:0 12px 32px rgba(17,24,39,.08);--radius:16px;
+  --font:"Plus Jakarta Sans","Noto Sans TC","Source Han Sans TC","MiSans","PingFang TC","Microsoft JhengHei",sans-serif
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);background:var(--bg);font-family:"Plus Jakarta Sans","Noto Sans TC","Source Han Sans TC","MiSans","PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.7}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(129,140,248,.45);outline-offset:2px}
+.shell{width:min(1180px,calc(100% - 32px));margin:0 auto}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(249,250,251,.93);border-bottom:1px solid rgba(229,231,235,.85);backdrop-filter:blur(16px)}
+.topbar-inner{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:inline-flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);font-weight:800}
+.brand-mark{width:38px;height:38px;display:grid;place-items:center;color:#fff;background:var(--primary);border-radius:12px;box-shadow:0 8px 18px rgba(79,70,229,.22);font-size:20px}
+.nav{display:flex;align-items:center;gap:6px}
+.nav button{border:0;background:transparent;color:var(--muted);padding:9px 13px;border-radius:10px;font-weight:800;transition:.2s}
+.nav button:hover,.nav button.active{color:var(--primary-dark);background:var(--surface-3)}
+.progress-mini{min-width:155px}.progress-mini-label{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px;margin-bottom:5px}.progress-track{height:8px;border-radius:999px;background:var(--line);overflow:hidden}.progress-fill{height:100%;width:0;border-radius:inherit;background:var(--primary);transition:width .3s}
+.hero{padding:70px 0 38px}.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.eyebrow{color:var(--primary);font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+h1,h2,h3,p{margin:0}h1{margin-top:14px;max-width:740px;font-size:clamp(38px,5vw,66px);line-height:1.12;letter-spacing:-.055em}
+.hero-copy{margin-top:20px;max-width:650px;color:var(--body);font-size:18px}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{border:0;border-radius:10px;padding:12px 18px;font-weight:800;transition:transform .2s,background .2s,box-shadow .2s}.btn:hover{transform:translateY(-1px)}
+.btn-primary{color:#fff;background:var(--primary);box-shadow:0 8px 18px rgba(79,70,229,.2)}.btn-primary:hover{background:var(--primary-dark)}
+.btn-secondary{color:var(--primary-dark);background:#fff;border:1px solid #c7d2fe}.btn-secondary:hover{background:var(--surface-3)}
+.btn-gold{color:#fff;background:var(--gold)}.btn-quiet{color:var(--muted);background:#fff;border:1px solid var(--line)}
+.hero-card{position:relative;padding:28px;min-height:300px;background:linear-gradient(145deg,#4f46e5,#3730a3);color:#fff;border-radius:24px;overflow:hidden;box-shadow:0 24px 48px rgba(55,48,163,.23)}
+.hero-card:after{content:"粵";position:absolute;right:-18px;bottom:-70px;color:rgba(255,255,255,.09);font-size:250px;font-weight:900;line-height:1}
+.hero-card h2{font-size:26px;line-height:1.25}.hero-card p{margin-top:10px;color:#e0e7ff}
+.hero-number{margin-top:36px;display:flex;align-items:end;gap:13px;position:relative;z-index:1}.hero-number strong{font-size:60px;line-height:1}.hero-number span{color:#c7d2fe;font-size:14px;padding-bottom:6px}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;position:relative;z-index:1}.hero-pill{color:#e0e7ff;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:5px 10px;font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0 54px}.stat{padding:18px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 2px 8px rgba(17,24,39,.03)}.stat strong{display:block;color:var(--primary-dark);font-size:30px;line-height:1.1}.stat span{display:block;margin-top:3px;color:var(--muted);font-size:13px}
+.view{display:none;padding:8px 0 78px}.view.active{display:block}.section-heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:20px}.section-heading h2{font-size:clamp(26px,3vw,36px);line-height:1.2;letter-spacing:-.04em}.section-heading p{max-width:520px;color:var(--muted);font-size:14px}
+.panel{padding:22px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px}.rules h3{color:var(--primary-dark);font-size:16px}.rules p{margin-top:8px;color:var(--body);font-size:14px}.sound-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.sound-chip{min-height:88px;padding:10px;border-radius:10px;background:var(--surface-3);color:var(--primary-dark)}.sound-chip strong{display:block;font-size:18px;line-height:1.2}.sound-chip small{display:block;margin-top:4px;color:var(--body);font-size:11px}.sound-chip .icon-btn{margin-top:7px;width:28px;height:28px}.tone-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.tone{padding:10px 6px;text-align:center;border-radius:10px;background:var(--surface-3);color:var(--primary-dark);font-size:12px}.tone b{display:block;font-size:17px}.demo-panel{margin:18px 0}.demo-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:15px}.demo-step{padding:9px 10px;border-radius:10px;background:var(--surface-3);color:var(--muted);font-size:12px;text-align:center}.demo-step.active{color:var(--primary-dark);background:#e0e7ff;font-weight:800}.demo-card{margin-top:16px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:18px;border:1px solid #c7d2fe;border-radius:14px;background:linear-gradient(135deg,#eef2ff,#fff)}.demo-meta{color:var(--primary);font-size:12px;font-weight:900;letter-spacing:.08em}.demo-prompt{margin-top:5px;font-size:34px;line-height:1.15;font-weight:900}.demo-answer-row{display:flex;gap:8px;margin-top:12px}.demo-answer-row .answer-input{flex:1}.demo-side{display:grid;justify-items:center;gap:10px}.demo-side .icon-btn{width:44px;height:44px}.demo-score{color:var(--primary-dark);font-weight:900}.demo-feedback{min-height:24px;margin-top:8px;font-size:13px}.demo-feedback.correct{color:#047857}.demo-feedback.wrong{color:#92400e}
+.library-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}.search{flex:1 1 240px}.search input,.select,.answer-input{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);padding:12px 14px}
+.filter{display:flex;gap:6px}.filter button{border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--muted);background:#fff;font-size:13px;font-weight:800}.filter button.active{color:var(--primary-dark);background:var(--surface-3);border-color:#c7d2fe}.result-count{color:var(--muted);font-size:13px;margin-left:auto}
+.word-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.word-card{min-height:150px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:14px;transition:.2s}.word-card:hover{transform:translateY(-2px);border-color:#c7d2fe;box-shadow:0 8px 18px rgba(79,70,229,.1)}.word-card.learned{border-color:#a7f3d0;background:var(--success-bg)}.word-card .type{color:var(--primary);font-size:11px;font-weight:900;letter-spacing:.08em}.word-card .hanzi{margin-top:7px;font-size:30px;line-height:1.15;font-weight:900;letter-spacing:.05em}.word-card .jyutping{margin-top:5px;color:var(--primary-dark);font-size:16px;font-weight:900}.word-card .meaning{margin-top:5px;color:var(--muted);font-size:12px}.card-actions{display:flex;gap:6px;margin-top:12px}.icon-btn{width:34px;height:34px;display:grid;place-items:center;color:var(--primary-dark);background:var(--surface-3);border:0;border-radius:9px}.icon-btn:hover{background:#ddd6fe}.icon-btn.done{color:#047857;background:#d1fae5}.icon-btn svg{width:17px;height:17px}.empty{grid-column:1/-1;padding:34px;text-align:center;color:var(--muted);border:1px dashed #c7d2fe;border-radius:14px;background:var(--surface-3)}
+.practice-layout{display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:start}.control-stack{display:grid;gap:13px}.control-stack label{color:var(--body);font-size:13px;font-weight:900}.control-stack select{margin-top:6px}.quiz-card{min-height:420px;display:flex;flex-direction:column;justify-content:space-between}.quiz-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}.quiz-prompt{margin:38px 0 24px;text-align:center}.prompt-label{color:var(--primary);font-size:13px;font-weight:900;letter-spacing:.08em}.prompt-value{margin-top:10px;font-size:clamp(42px,7vw,76px);line-height:1.15;font-weight:900;letter-spacing:.06em}.prompt-jyutping{margin-top:12px;color:var(--primary-dark);font-size:24px;font-weight:900;letter-spacing:.04em}.answer-row{display:flex;gap:8px}.answer-row .answer-input{flex:1}.feedback{min-height:48px;margin-top:14px;padding:11px 14px;border-radius:10px;font-size:14px}.feedback:empty{display:none}.feedback.correct{color:#047857;background:var(--success-bg)}.feedback.wrong{color:#92400e;background:var(--gold-bg)}.quiz-tip{color:var(--muted);font-size:13px}
+.test-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.test-card h3{font-size:22px}.test-card p{margin-top:8px;color:var(--muted);font-size:14px}.test-score{margin:22px 0;display:flex;align-items:baseline;gap:8px}.test-score strong{color:var(--primary-dark);font-size:42px;line-height:1}.test-score span{color:var(--muted);font-size:13px}.test-card.locked{opacity:.62}.compare{margin-top:18px}.compare h3{font-size:18px}.compare-bars{display:grid;gap:12px;margin-top:15px}.compare-line{display:grid;grid-template-columns:64px 1fr 54px;gap:10px;align-items:center;font-size:13px}.compare-line .bar{height:12px;border-radius:999px;background:var(--line);overflow:hidden}.compare-line .bar i{display:block;height:100%;width:0;border-radius:inherit;background:var(--primary);transition:width .3s}.compare-line.post .bar i{background:var(--success)}.score-note{margin-top:12px;color:var(--muted);font-size:13px}
+.toast{position:fixed;right:20px;bottom:20px;z-index:20;max-width:330px;padding:12px 15px;color:#fff;background:#111827;border-radius:10px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transform:translateY(10px);transition:.2s;font-size:13px}.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:950px){.hero-grid,.practice-layout{grid-template-columns:1fr}.hero-card{min-height:240px}.word-grid{grid-template-columns:repeat(4,1fr)}.rules{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.shell{width:min(100% - 22px,560px)}.topbar-inner{min-height:64px;flex-wrap:wrap;padding:10px 0}.nav{order:3;width:100%;overflow-x:auto}.nav button{flex:1 0 auto}.progress-mini{margin-left:auto}.hero{padding-top:42px}.stats,.rules{grid-template-columns:1fr}.section-heading{display:block}.section-heading p{margin-top:8px}.word-grid{grid-template-columns:repeat(2,1fr)}.sound-grid,.demo-steps{grid-template-columns:repeat(2,1fr)}.tone-row{grid-template-columns:repeat(3,1fr)}.answer-row,.demo-answer-row{flex-direction:column}.answer-row .btn,.demo-answer-row .btn{width:100%}.demo-card{grid-template-columns:1fr}.demo-side{justify-items:start;grid-auto-flow:column;justify-content:start}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="shell topbar-inner">
+    <a class="brand" href="#top" aria-label="返回首頁"><span class="brand-mark" aria-hidden="true">粵</span><span>粵拼小課堂</span></a>
+    <nav class="nav" aria-label="主要功能">
+      <button class="nav-btn active" data-view="learn-view">學習流程</button>
+      <button class="nav-btn" data-view="practice-view">練習</button>
+      <button class="nav-btn" data-view="test-view">前測／後測</button>
+    </nav>
+    <div class="progress-mini" aria-label="學習進度"><div class="progress-mini-label"><span>學習進度</span><strong id="progress-text">0 / 45</strong></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero shell">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">AI 輔助粵語拼音學習</div>
+      <h1>由「識講廣東話」<br>走到「識讀粵拼」</h1>
+      <p class="hero-copy">用 30 個常用字、15 個詞組／短句，加上聽音、配對和測驗，逐步建立粵拼認讀與轉換能力。</p>
+      <div class="hero-actions"><button class="btn btn-primary" data-scroll-view="learn-view">開始學習</button><button class="btn btn-secondary" data-demo-start>現場示範</button></div>
+    </div>
+    <aside class="hero-card" aria-label="學習目標">
+      <h2>本課程的成功標準</h2>
+      <p>能將常見粵語詞語和短句轉換成粵拼，準確率達 70% 或以上。</p>
+      <div class="hero-number"><strong>70%</strong><span>目標正確率</span></div>
+      <div class="hero-pills"><span class="hero-pill">聲母／韻母</span><span class="hero-pill">六個聲調</span><span class="hero-pill">漢字 ↔ 粵拼</span></div>
+    </aside>
+  </div>
+  <div class="stats" aria-label="內容統計"><div class="stat"><strong>30</strong><span>常見粵語字</span></div><div class="stat"><strong>15</strong><span>詞組／短句</span></div><div class="stat"><strong id="stat-best">—</strong><span>目前最佳測驗成績</span></div></div>
+</section>
+
+<section class="view active" id="learn-view">
+<div class="shell">
+  <div class="section-heading"><div><div class="eyebrow">LEARN · 01</div><h2>先建立粵拼基本規則</h2></div><p>先看規則，再用字卡和短句把聲音、漢字與拼音連起來。按小喇叭可以嘗試播放粵語讀音。</p></div>
+  <div class="rules">
+    <article class="panel"><h3>聲母</h3><p>音節開頭的音。按例字旁的小喇叭，先聽完整音節，再留意開頭。</p><div class="sound-grid" id="initial-grid" aria-label="常見粵拼聲母"></div></article>
+    <article class="panel"><h3>韻母</h3><p>音節後面的主要音。例：<b>gw + aa + n = gwaan</b>。</p><div class="sound-grid" id="final-grid" aria-label="常見粵拼韻母"></div></article>
+    <article class="panel"><h3>六個聲調</h3><p>粵拼用 1–6 表示聲調。用例字聽辨，比死記單音節更容易。</p><div class="tone-row" id="tone-grid" aria-label="六個聲調示例"></div></article>
+  </div>
+  <article class="panel demo-panel" id="demo-anchor">
+    <div class="section-heading"><div><div class="eyebrow">LIVE DEMO · 00</div><h2>現場示範：三步完成一題</h2></div><p>固定題目、固定順序，適合報告時示範完整的人機協作流程。</p></div>
+    <div class="demo-steps" aria-label="示範步驟"><div class="demo-step active" data-demo-step="0">1 · 認識規則</div><div class="demo-step" data-demo-step="1">2 · 聽音辨認</div><div class="demo-step" data-demo-step="2">3 · 輸入答案</div><div class="demo-step" data-demo-step="3">4 · 即時回饋</div></div>
+    <div class="demo-card">
+      <div><div class="demo-meta" id="demo-label">粵語 → 粵拼 · 示範題 1 / 2</div><div class="demo-prompt" id="demo-prompt">唔該</div><div class="demo-answer-row"><input class="answer-input" id="demo-answer" type="text" autocomplete="off" placeholder="輸入粵拼，例如 m4 goi1" disabled><button class="btn btn-primary" id="submit-demo" disabled>開始示範</button></div><div class="demo-feedback" id="demo-feedback" aria-live="polite"></div></div>
+      <div class="demo-side"><button class="icon-btn" id="demo-audio" aria-label="播放示範題目讀音" title="播放讀音">播放</button><div class="demo-score" id="demo-score">0 / 2</div></div>
+    </div>
+  </article>
+  <div class="panel">
+    <div class="library-toolbar"><div class="search"><input id="library-search" type="search" placeholder="搜尋漢字或粵拼，例如：食、sik6" aria-label="搜尋字庫"></div><div class="filter" role="group" aria-label="內容篩選"><button class="filter-btn active" data-filter="all">全部</button><button class="filter-btn" data-filter="character">30個字</button><button class="filter-btn" data-filter="phrase">15個詞組／短句</button></div><span class="result-count" id="result-count">45 個項目</span></div>
+    <div class="word-grid" id="word-grid"></div>
+  </div>
+</div>
+</section>
+
+<section class="view" id="practice-view">
+<div class="shell">
+  <div class="section-heading"><div><div class="eyebrow">PRACTICE · 02</div><h2>把認讀變成可操作的練習</h2></div><p>選擇方向後開始。系統會即時告訴你答案是否正確，並保留練習統計。</p></div>
+  <div class="practice-layout">
+    <aside class="panel control-stack">
+      <div><label for="practice-direction">練習方向</label><select class="select" id="practice-direction"><option value="hanzi-to-jyutping">粵語 → 粵拼</option><option value="jyutping-to-hanzi">粵拼 → 粵語</option></select></div>
+      <div><label for="practice-scope">題目範圍</label><select class="select" id="practice-scope"><option value="all">字＋詞組／短句</option><option value="character">30個字</option><option value="phrase">15個詞組／短句</option></select></div>
+      <button class="btn btn-primary" id="start-practice">開始／重新開始</button>
+      <div class="panel" style="padding:14px;background:var(--surface-3);box-shadow:none"><b>小提示</b><p class="quiz-tip">粵拼聲調數字要一起輸入，例如：<b>ngo5</b>、<b>m4 goi1</b>。</p></div>
+    </aside>
+    <article class="panel quiz-card" id="practice-card">
+      <div class="quiz-meta"><span id="practice-progress">尚未開始</span><span id="practice-score">得分 0</span></div>
+      <div class="quiz-prompt"><div class="prompt-label" id="practice-label">按「開始」生成題目</div><div class="prompt-value" id="practice-prompt">粵拼</div><button class="icon-btn" id="practice-audio" aria-label="播放題目讀音" title="播放讀音"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></button><div class="prompt-jyutping" id="practice-hint"></div></div>
+      <div><div class="answer-row"><input class="answer-input" id="practice-answer" type="text" autocomplete="off" placeholder="輸入答案後按提交" disabled><button class="btn btn-primary" id="submit-practice" disabled>提交</button></div><div class="feedback" id="practice-feedback" aria-live="polite"></div></div>
+    </article>
+  </div>
+</div>
+</section>
+
+<section class="view" id="test-view">
+<div class="shell">
+  <div class="section-heading"><div><div class="eyebrow">TEST · 03</div><h2>用前測與後測比較學習成效</h2></div><p>前測建立起點；完成字庫學習及練習後，再做後測。兩次測驗使用不同題目，較能反映真正的轉換能力。</p></div>
+  <div id="test-home">
+    <div class="test-grid">
+      <article class="panel test-card"><div class="eyebrow">BASELINE</div><h3>前測</h3><p>先不看答案，完成 10 題，記錄目前起點。</p><div class="test-score"><strong id="pre-score">—</strong><span id="pre-score-label">尚未完成</span></div><button class="btn btn-primary" data-start-test="pre">開始前測</button></article>
+      <article class="panel test-card"><div class="eyebrow">OUTCOME</div><h3>後測</h3><p>完成學習和練習後，再做 10 題，與前測比較。</p><div class="test-score"><strong id="post-score">—</strong><span id="post-score-label">需要先完成前測</span></div><button class="btn btn-gold" data-start-test="post" id="post-test-btn" disabled>開始後測</button></article>
+    </div>
+    <article class="panel compare"><h3>成效比較</h3><div class="compare-bars"><div class="compare-line"><span>前測</span><div class="bar"><i id="pre-bar"></i></div><b id="pre-bar-label">—</b></div><div class="compare-line post"><span>後測</span><div class="bar"><i id="post-bar"></i></div><b id="post-bar-label">—</b></div></div><p class="score-note" id="score-note">完成前測後，這裡會顯示你的學習變化。</p></article>
+  </div>
+  <article class="panel quiz-card" id="test-card" hidden>
+    <div class="quiz-meta"><span id="test-progress">第 1 / 10 題</span><span id="test-score-live">得分 0</span></div>
+    <div class="quiz-prompt"><div class="prompt-label" id="test-label">請輸入答案</div><div class="prompt-value" id="test-prompt">—</div><button class="icon-btn" id="test-audio" aria-label="播放題目讀音" title="播放讀音"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></button><div class="prompt-jyutping" id="test-hint"></div></div>
+    <div><div class="answer-row"><input class="answer-input" id="test-answer" type="text" autocomplete="off" placeholder="輸入答案"><button class="btn btn-primary" id="submit-test">提交</button></div><div class="feedback" id="test-feedback" aria-live="polite"></div></div>
+  </article>
+</div>
+</section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const characters = [
+  ['我','ngo5','我'],['你','nei5','你'],['佢','keoi5','他／她／它'],['係','hai6','是'],['唔','m4','不'],['有','jau5','有'],['冇','mou5','沒有'],['食','sik6','吃'],['飲','jam2','喝'],['睇','tai2','看'],['聽','teng1','聽'],['講','gong2','說'],['行','haang4','走／行'],['返','faan1','回去'],['去','heoi3','去'],['嚟','lai4','來'],['好','hou2','好'],['多','do1','多'],['少','siu2','少'],['人','jan4','人'],['屋','uk1','房屋'],['學','hok6','學習'],['生','saang1','學生的「生」'],['書','syu1','書'],['水','seoi2','水'],['火','fo2','火'],['天','tin1','天'],['地','dei6','地'],['開','hoi1','開'],['關','gwaan1','關閉']
+].map(function(item){return {hanzi:item[0],jyutping:item[1],meaning:item[2],type:'character'}});
+const phrases = [
+  ['早晨','zou2 san4','早安'],['你好','nei5 hou2','你好'],['多謝','do1 ze6','謝謝'],['唔該','m4 goi1','謝謝／麻煩你'],['食飯','sik6 faan6','吃飯'],['飲水','jam2 seoi2','喝水'],['返工','faan1 gung1','上班'],['放學','fong3 hok6','下課／放學'],['幾多錢','gei2 do1 cin2','多少錢'],['而家','ji4 gaa1','現在'],['聽日','ting1 jat6','明天'],['尋日','cam4 jat6','昨天'],['點解','dim2 gaai2','為什麼'],['我係學生','ngo5 hai6 hok6 saang1','我是學生'],['你食咗飯未','nei5 sik6 zo2 faan6 mei6','你吃飯了嗎？']
+].map(function(item){return {hanzi:item[0],jyutping:item[1],meaning:item[2],type:'phrase'}});
+const initials = [
+  ['b','波','bo1'],['p','婆','po4'],['m','摸','mo1'],['f','花','faa1'],['d','多','do1'],['t','拖','to1'],['n','你','nei5'],['l','來','lai4'],['g','高','gou1'],['k','卡','kaa1'],['ng','我','ngo5'],['h','好','hou2'],['gw','瓜','gwaa1'],['kw','誇','kwaa1'],['w','話','waa6'],['z','知','zi1'],['c','車','ce1'],['s','三','saam1'],['j','人','jan4']
+].map(function(item){return {symbol:item[0],example:item[1],jyutping:item[2]}});
+const finals = [
+  ['aa','家','gaa1'],['a','日','jat6'],['e','四','sei3'],['i','知','zi1'],['o','歌','go1'],['u','姑','gu1'],['oe','靴','hoe1'],['eo','腳','goek3'],['yu','魚','jyu4'],['ui','杯','bui1'],['ei','四','sei3'],['ou','路','lou6']
+].map(function(item){return {symbol:item[0],example:item[1],jyutping:item[2]}});
+const tones = [
+  ['1','高平','詩','si1'],['2','高升','史','si2'],['3','中平','試','si3'],['4','低降','時','si4'],['5','低升','市','si5'],['6','低平','事','si6']
+].map(function(item){return {symbol:item[0],meaning:item[1],example:item[2],jyutping:item[3]}});
+const items = characters.concat(phrases).map(function(item,index){return Object.assign({},item,{id:item.type+'-'+index})});
+const storageKey = 'jyutping-classroom-progress-v1';
+let saved = {}; try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}') || {}; } catch (error) {}
+const state = {learned:new Set(saved.learned || []),testScores:saved.testScores || {}};
+let activeFilter = 'all';
+let practice = {pool:[],index:0,score:0,current:null,checked:false};
+let test = {mode:null,pool:[],index:0,score:0,current:null,checked:false};
+let demo = {index:0,score:0,started:false,checked:false};
+
+function $(selector){return document.querySelector(selector)}
+function $$(selector){return Array.prototype.slice.call(document.querySelectorAll(selector))}
+function icon(name){
+  if(name === 'speaker') return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
+}
+function persist(){localStorage.setItem(storageKey,JSON.stringify({learned:Array.from(state.learned),testScores:state.testScores}))}
+function updateStats(){
+  var count=state.learned.size;
+  $('#progress-text').textContent=count+' / '+items.length;
+  $('#progress-fill').style.width=Math.round(count/items.length*100)+'%';
+  var scores=Object.keys(state.testScores).map(function(key){var result=state.testScores[key];return Math.round(result.score/result.total*100)});
+  $('#stat-best').textContent=scores.length?Math.max.apply(null,scores)+'%':'—';
+}
+function showToast(message){
+  var toast=$('#toast');toast.textContent=message;toast.classList.add('show');
+  clearTimeout(showToast.timer);showToast.timer=setTimeout(function(){toast.classList.remove('show')},2500);
+}
+function speak(text){
+  if(!('speechSynthesis' in window)){showToast('此瀏覽器不支援語音播放。');return}
+  speechSynthesis.cancel();
+  var utterance=new SpeechSynthesisUtterance(text);
+  var voices=speechSynthesis.getVoices();
+  var voice=voices.find(function(item){return /^yue/i.test(item.lang)})||voices.find(function(item){return /zh-(HK|TW)/i.test(item.lang)})||voices.find(function(item){return /^zh/i.test(item.lang)});
+  if(voice){utterance.voice=voice;utterance.lang=voice.lang}else{utterance.lang='yue-HK'}
+  utterance.rate=.82;speechSynthesis.speak(utterance);
+  showToast(voice?'正在播放：'+text:'找不到專用粵語語音，已嘗試使用中文語音播放。');
+}
+function shuffle(list){return list.slice().sort(function(){return Math.random()-.5})}
+function currentLibraryItems(){
+  var query=$('#library-search').value.trim().toLowerCase();
+  return items.filter(function(item){
+    return (activeFilter==='all'||item.type===activeFilter)&&(!query||(item.hanzi+item.jyutping+item.meaning).toLowerCase().indexOf(query)>=0)
+  })
+}
+function renderLibrary(){
+  var list=currentLibraryItems();
+  $('#result-count').textContent=list.length+' 個項目';
+  $('#word-grid').innerHTML=list.length?list.map(function(item){
+    var done=state.learned.has(item.id);
+    return '<article class="word-card '+(done?'learned':'')+'"><div class="type">'+(item.type==='character'?'常用字':'詞組／短句')+'</div><div class="hanzi">'+item.hanzi+'</div><div class="jyutping">'+item.jyutping+'</div><div class="meaning">'+item.meaning+'</div><div class="card-actions"><button class="icon-btn" data-speak="'+item.hanzi+'" aria-label="播放'+item.hanzi+'的讀音" title="播放讀音">'+icon('speaker')+'</button><button class="icon-btn '+(done?'done':'')+'" data-learned="'+item.id+'" aria-label="'+(done?'取消':'標記')+'已掌握" title="'+(done?'取消已掌握':'標記已掌握')+'">'+icon('check')+'</button></div></article>'
+  }).join(''):'<div class="empty">找不到符合的字或粵拼，試試其他關鍵字。</div>';
+  updateStats();
+}
+function renderSoundCards(){
+  $('#initial-grid').innerHTML=initials.map(function(item){return '<div class="sound-chip"><strong>'+item.symbol+'</strong><small>'+item.example+' · '+item.jyutping+'</small><button class="icon-btn" data-speak="'+item.example+'" aria-label="播放'+item.example+'的讀音" title="播放例字">'+icon('speaker')+'</button></div>'}).join('');
+  $('#final-grid').innerHTML=finals.map(function(item){return '<div class="sound-chip"><strong>'+item.symbol+'</strong><small>'+item.example+' · '+item.jyutping+'</small><button class="icon-btn" data-speak="'+item.example+'" aria-label="播放'+item.example+'的讀音" title="播放例字">'+icon('speaker')+'</button></div>'}).join('');
+  $('#tone-grid').innerHTML=tones.map(function(item){return '<div class="tone"><b>'+item.jyutping+'</b>'+item.meaning+'<button class="icon-btn" data-speak="'+item.example+'" aria-label="播放'+item.example+'的讀音" title="播放例字">'+icon('speaker')+'</button></div>'}).join('');
+}
+const demoQuestions = [
+  {label:'粵語 → 粵拼',prompt:'唔該',audio:'唔該',answer:'m4 goi1',hint:'輸入兩個音節，中間留空格。'},
+  {label:'粵拼 → 粵語',prompt:'ngo5 hai6 hok6 saang1',audio:'我係學生',answer:'我係學生',hint:'輸入對應漢字／詞組。'}
+];
+function renderDemo(){
+  var question=demoQuestions[demo.index];
+  $('#demo-label').textContent=question.label+' · 示範題 '+(demo.index+1)+' / '+demoQuestions.length;
+  $('#demo-prompt').textContent=question.prompt;$('#demo-answer').value='';$('#demo-answer').disabled=!demo.started;$('#submit-demo').disabled=false;$('#submit-demo').textContent=demo.started?'提交':'開始示範';$('#demo-feedback').className='demo-feedback';$('#demo-feedback').textContent=question.hint;$('#demo-score').textContent=demo.score+' / '+demoQuestions.length;demo.checked=false;
+  $$('.demo-step').forEach(function(step,index){step.classList.toggle('active',demo.started?index>=2&&index<=3: index===0)});
+}
+function startDemo(){
+  demo={index:0,score:0,started:true,checked:false};activateView('learn-view');renderDemo();$('#demo-answer').focus();document.getElementById('demo-anchor').scrollIntoView({behavior:'smooth',block:'center'});speak(demoQuestions[0].audio);
+}
+function submitDemo(){
+  if(!demo.started){startDemo();return}
+  var question=demoQuestions[demo.index],feedback=$('#demo-feedback');
+  if(demo.checked){
+    if(demo.index===demoQuestions.length-1){feedback.className='demo-feedback correct';feedback.textContent='示範完成：'+demo.score+' / '+demoQuestions.length+'，可接著展示前測／後測。';$('#submit-demo').textContent='重新示範';$('#demo-answer').disabled=true;demo.started=false;return}
+    demo.index++;renderDemo();speak(demoQuestions[demo.index].audio);$('#demo-answer').focus();return
+  }
+  var correct=checkAnswer($('#demo-answer').value,question.answer);
+  if(correct){demo.score++;feedback.className='demo-feedback correct';feedback.textContent='答對了！這一步展示了輸入、判斷和即時回饋。'}else{feedback.className='demo-feedback wrong';feedback.textContent='正確答案：'+question.answer}
+  $('#demo-score').textContent=demo.score+' / '+demoQuestions.length;$('#submit-demo').textContent=demo.index===demoQuestions.length-1?'完成示範':'下一題';demo.checked=true;
+  $$('.demo-step').forEach(function(step,index){step.classList.toggle('active',index>=2)});
+}
+function activateView(viewId){
+  $$('.view').forEach(function(view){view.classList.toggle('active',view.id===viewId)});
+  $$('.nav-btn').forEach(function(button){button.classList.toggle('active',button.dataset.view===viewId)});
+  document.getElementById(viewId).scrollIntoView({behavior:'smooth',block:'start'});
+}
+function normalize(value){return value.toLowerCase().trim().replace(/[\s，。,.!?！？]/g,'')}
+function checkAnswer(input,expected){return normalize(input)===normalize(expected)}
+function getPracticePool(){var scope=$('#practice-scope').value;return items.filter(function(item){return scope==='all'||item.type===scope})}
+function renderPracticeQuestion(){
+  var item=practice.current;if(!item)return;
+  var forward=$('#practice-direction').value==='hanzi-to-jyutping';
+  $('#practice-progress').textContent='第 '+(practice.index+1)+' / '+practice.pool.length+' 題';
+  $('#practice-score').textContent='得分 '+practice.score;
+  $('#practice-label').textContent=forward?'請輸入對應粵拼':'請輸入對應粵語';
+  $('#practice-prompt').textContent=forward?item.hanzi:item.jyutping;
+  $('#practice-hint').textContent=forward?item.meaning:'按小喇叭可聽讀音';
+  $('#practice-answer').value='';$('#practice-answer').disabled=false;$('#submit-practice').disabled=false;$('#submit-practice').textContent='提交';
+  $('#practice-feedback').className='feedback';$('#practice-feedback').textContent='';practice.checked=false;
+}
+function startPractice(){
+  practice.pool=shuffle(getPracticePool());practice.index=0;practice.score=0;practice.current=practice.pool[0];renderPracticeQuestion();$('#practice-answer').focus()
+}
+function submitPractice(){
+  if(!practice.current){showToast('請先按「開始／重新開始」。');return}
+  if(practice.checked){practice.index=(practice.index+1)%practice.pool.length;practice.current=practice.pool[practice.index];renderPracticeQuestion();return}
+  var forward=$('#practice-direction').value==='hanzi-to-jyutping';
+  var expected=forward?practice.current.jyutping:practice.current.hanzi;
+  var correct=checkAnswer($('#practice-answer').value,expected),feedback=$('#practice-feedback');
+  if(correct){practice.score++;feedback.className='feedback correct';feedback.textContent='答對了！你已經把漢字、讀音和粵拼連起來。'}
+  else{feedback.className='feedback wrong';feedback.textContent='再試一次：正確答案是 '+expected+'。按「下一題」繼續。'}
+  $('#practice-score').textContent='得分 '+practice.score;$('#submit-practice').textContent='下一題';practice.checked=true;
+}
+function updateTestHome(){
+  var pre=state.testScores.pre,post=state.testScores.post;
+  $('#pre-score').textContent=pre?Math.round(pre.score/pre.total*100)+'%':'—';$('#pre-score-label').textContent=pre?pre.score+' / '+pre.total+' 題':'尚未完成';
+  $('#post-score').textContent=post?Math.round(post.score/post.total*100)+'%':'—';$('#post-score-label').textContent=post?post.score+' / '+post.total+' 題':(pre?'可以開始後測':'需要先完成前測');
+  $('#post-test-btn').disabled=!pre;
+  $('#pre-bar').style.width=(pre?Math.round(pre.score/pre.total*100):0)+'%';$('#post-bar').style.width=(post?Math.round(post.score/post.total*100):0)+'%';
+  $('#pre-bar-label').textContent=pre?Math.round(pre.score/pre.total*100)+'%':'—';$('#post-bar-label').textContent=post?Math.round(post.score/post.total*100)+'%':'—';
+  $('#score-note').textContent=pre&&post?'由 '+Math.round(pre.score/pre.total*100)+'% 變成 '+Math.round(post.score/post.total*100)+'%，'+(post.score/post.total>=.7?'已達到 70% 目標。':'仍可回到字庫和練習加強。'):'完成前測後，這裡會顯示你的學習變化。';
+  updateStats();
+}
+function renderTestQuestion(){
+  var item=test.current,forward=test.index%2===0;
+  $('#test-progress').textContent='第 '+(test.index+1)+' / '+test.pool.length+' 題';$('#test-score-live').textContent='得分 '+test.score;
+  $('#test-label').textContent=forward?'粵語 → 粵拼':'粵拼 → 粵語';$('#test-prompt').textContent=forward?item.hanzi:item.jyutping;
+  $('#test-hint').textContent=forward?'輸入完整粵拼，聲調數字不可漏':'輸入對應漢字／詞組';
+  $('#test-answer').value='';$('#test-feedback').className='feedback';$('#test-feedback').textContent='';$('#submit-test').textContent='提交';test.checked=false;
+}
+function startTest(mode){
+  test={mode:mode,pool:shuffle(items).slice(0,10),index:0,score:0,current:null,checked:false};test.current=test.pool[0];
+  $('#test-home').hidden=true;$('#test-card').hidden=false;renderTestQuestion();$('#test-answer').focus();
+}
+function submitTest(){
+  if(test.checked){
+    if(test.index>=test.pool.length-1){
+      state.testScores[test.mode]={score:test.score,total:test.pool.length,date:new Date().toISOString()};persist();$('#test-card').hidden=true;$('#test-home').hidden=false;updateTestHome();showToast((test.mode==='pre'?'前測':'後測')+'完成！');return
+    }
+    test.index++;test.current=test.pool[test.index];renderTestQuestion();return
+  }
+  var forward=test.index%2===0,expected=forward?test.current.jyutping:test.current.hanzi;
+  var correct=checkAnswer($('#test-answer').value,expected),feedback=$('#test-feedback');
+  if(correct){test.score++;feedback.className='feedback correct';feedback.textContent='答對了！'}else{feedback.className='feedback wrong';feedback.textContent='正確答案：'+expected}
+  $('#test-score-live').textContent='得分 '+test.score;$('#submit-test').textContent=test.index>=test.pool.length-1?'完成測驗':'下一題';test.checked=true;
+}
+$$('.nav-btn').forEach(function(button){button.addEventListener('click',function(){activateView(button.dataset.view)})});
+$$('[data-scroll-view]').forEach(function(button){button.addEventListener('click',function(){activateView(button.dataset.scrollView)})});
+$$('.filter-btn').forEach(function(button){button.addEventListener('click',function(){activeFilter=button.dataset.filter;$$('.filter-btn').forEach(function(item){item.classList.toggle('active',item===button)});renderLibrary()})});
+$('#library-search').addEventListener('input',renderLibrary);
+$('#word-grid').addEventListener('click',function(event){
+  var speaker=event.target.closest('[data-speak]'),learned=event.target.closest('[data-learned]');
+  if(speaker)speak(speaker.dataset.speak);
+  if(learned){var id=learned.dataset.learned;state.learned.has(id)?state.learned.delete(id):state.learned.add(id);persist();renderLibrary()}
+});
+$('#initial-grid').addEventListener('click',function(event){var speaker=event.target.closest('[data-speak]');if(speaker)speak(speaker.dataset.speak)});
+$('#final-grid').addEventListener('click',function(event){var speaker=event.target.closest('[data-speak]');if(speaker)speak(speaker.dataset.speak)});
+$('#tone-grid').addEventListener('click',function(event){var speaker=event.target.closest('[data-speak]');if(speaker)speak(speaker.dataset.speak)});
+$$('[data-demo-start]').forEach(function(button){button.addEventListener('click',startDemo)});
+$('#submit-demo').addEventListener('click',submitDemo);$('#demo-answer').addEventListener('keydown',function(event){if(event.key==='Enter')submitDemo()});$('#demo-audio').addEventListener('click',function(){speak(demoQuestions[demo.index].audio)});
+$('#start-practice').addEventListener('click',startPractice);$('#submit-practice').addEventListener('click',submitPractice);$('#practice-answer').addEventListener('keydown',function(event){if(event.key==='Enter')submitPractice()});
+$$('[data-start-test]').forEach(function(button){button.addEventListener('click',function(){startTest(button.dataset.startTest)})});
+$('#submit-test').addEventListener('click',submitTest);$('#test-answer').addEventListener('keydown',function(event){if(event.key==='Enter')submitTest()});
+$('#practice-audio').addEventListener('click',function(){if(practice.current)speak(practice.current.hanzi)});
+$('#test-audio').addEventListener('click',function(){if(test.current)speak(test.current.hanzi)});
+$('#practice-card').addEventListener('click',function(event){if(event.target.closest('.prompt-value')&&practice.current)speak(practice.current.hanzi)});
+$('#test-card').addEventListener('click',function(event){if(event.target.closest('.prompt-value')&&test.current)speak(test.current.hanzi)});
+renderSoundCards();renderLibrary();updateTestHome();renderDemo();
+</script>
+</body>
+</html>
